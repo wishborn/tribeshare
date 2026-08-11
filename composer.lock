@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e1bcfdbb9ae018aaa611e87f933d561",
+    "content-hash": "89010b11aaf92ebd3937b5defb22a2b8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1283,6 +1283,95 @@
             "time": "2026-08-04T21:58:51+00:00"
         },
         {
+            "name": "laravel/cashier",
+            "version": "v16.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/cashier-stripe.git",
+                "reference": "781ff517a544004f4ae0501f634c1ada40b78572"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/cashier-stripe/zipball/781ff517a544004f4ae0501f634c1ada40b78572",
+                "reference": "781ff517a544004f4ae0501f634c1ada40b78572",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/console": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/contracts": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/database": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/http": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/log": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/notifications": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/pagination": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/routing": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
+                "illuminate/view": "^10.0|^11.0|^12.0|^13.0",
+                "moneyphp/money": "^4.0",
+                "nesbot/carbon": "^2.0|^3.0",
+                "php": "^8.1",
+                "stripe/stripe-php": "^17.4|^18.0|^19.0|^20.0",
+                "symfony/console": "^6.0|^7.0|^8.0",
+                "symfony/http-kernel": "^6.0|^7.0|^8.0",
+                "symfony/polyfill-intl-icu": "^1.22.1",
+                "symfony/polyfill-php84": "^1.32"
+            },
+            "require-dev": {
+                "dompdf/dompdf": "^2.0|^3.0",
+                "orchestra/testbench": "^8.36|^9.15|^10.8|^11.0",
+                "phpstan/phpstan": "^1.10",
+                "spatie/laravel-ray": "^1.40"
+            },
+            "suggest": {
+                "dompdf/dompdf": "Required when generating and downloading invoice PDF's using Dompdf (^2.0|^3.0).",
+                "ext-intl": "Allows for more locales besides the default \"en\" when formatting money values.",
+                "spatie/laravel-pdf": "Required when generating and downloading invoice PDF's using Cashier's LaravelPdfInvoiceRenderer."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Cashier\\CashierServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "16.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Cashier\\": "src/",
+                    "Laravel\\Cashier\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Dries Vints",
+                    "email": "dries@laravel.com"
+                }
+            ],
+            "description": "Laravel Cashier provides an expressive, fluent interface to Stripe's subscription billing services.",
+            "keywords": [
+                "billing",
+                "laravel",
+                "stripe"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/cashier/issues",
+                "source": "https://github.com/laravel/cashier"
+            },
+            "time": "2026-08-05T23:53:36+00:00"
+        },
+        {
             "name": "laravel/chisel",
             "version": "v0.1.1",
             "source": {
@@ -2508,6 +2597,96 @@
             "time": "2026-03-08T20:05:35+00:00"
         },
         {
+            "name": "moneyphp/money",
+            "version": "v4.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/moneyphp/money.git",
+                "reference": "d49ee625c6ba79b9d7a228ce153b02fc1032152b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/moneyphp/money/zipball/d49ee625c6ba79b9d7a228ce153b02fc1032152b",
+                "reference": "d49ee625c6ba79b9d7a228ce153b02fc1032152b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-filter": "*",
+                "ext-json": "*",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "require-dev": {
+                "cache/taggable-cache": "^1.1.0",
+                "doctrine/coding-standard": "^12.0",
+                "doctrine/instantiator": "^1.5.0 || ^2.0",
+                "ext-gmp": "*",
+                "ext-intl": "*",
+                "florianv/exchanger": "^2.8.1",
+                "florianv/swap": "^4.3.0",
+                "moneyphp/crypto-currencies": "^1.1.0",
+                "moneyphp/iso-currencies": "^3.4",
+                "php-http/message": "^1.16.0",
+                "php-http/mock-client": "^1.6.0",
+                "phpbench/phpbench": "^1.2.5",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1.9",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^10.5.9",
+                "psr/cache": "^1.0.1 || ^2.0 || ^3.0",
+                "ticketswap/phpstan-error-formatter": "^1.1"
+            },
+            "suggest": {
+                "ext-gmp": "Calculate without integer limits",
+                "ext-intl": "Format Money objects with intl",
+                "florianv/exchanger": "Exchange rates library for PHP",
+                "florianv/swap": "Exchange rates library for PHP",
+                "psr/cache-implementation": "Used for Currency caching"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Money\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mathias Verraes",
+                    "email": "mathias@verraes.net",
+                    "homepage": "http://verraes.net"
+                },
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                },
+                {
+                    "name": "Frederik Bosch",
+                    "email": "f.bosch@genkgo.nl"
+                }
+            ],
+            "description": "PHP implementation of Fowler's Money pattern",
+            "homepage": "http://moneyphp.org",
+            "keywords": [
+                "Value Object",
+                "money",
+                "vo"
+            ],
+            "support": {
+                "issues": "https://github.com/moneyphp/money/issues",
+                "source": "https://github.com/moneyphp/money/tree/v4.9.0"
+            },
+            "time": "2026-05-04T20:23:15+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "3.10.0",
             "source": {
@@ -3085,6 +3264,264 @@
                 "source": "https://github.com/paragonie/constant_time_encoding"
             },
             "time": "2025-09-24T15:06:41+00:00"
+        },
+        {
+            "name": "particle-academy/fancy-flow-php",
+            "version": "v0.14.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Particle-Academy/fancy-flow-php.git",
+                "reference": "7b4a9ba75b57c19d30d3ef1c378b3fc855b5139b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Particle-Academy/fancy-flow-php/zipball/7b4a9ba75b57c19d30d3ef1c378b3fc855b5139b",
+                "reference": "7b4a9ba75b57c19d30d3ef1c378b3fc855b5139b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "laravel/ai": "^0.9",
+                "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+                "particle-academy/fancy-conformance": "^0.2.0",
+                "particle-academy/prism": "0.111",
+                "pestphp/pest": "^2.0|^3.0|^4.0",
+                "phpunit/phpunit": "^10.0|^11.0|^12.0"
+            },
+            "suggest": {
+                "illuminate/support": "Enables the optional Laravel layer — service provider, facade, queued durable runs, #[FlowNode] discovery, Artisan, and RunEvent → Laravel events. Compatible with 10.x through 13.x. The framework-free core (Workflow, FlowRunner, registries, the 26 built-ins) needs no framework.",
+                "laravel/ai": "Makes the `llm_branch` node work with zero glue — auto-detected and wired through the shipped laravel/ai adapter (structured output constrained to the declared routes).",
+                "particle-academy/prism": "Makes the `llm_branch` node work with zero glue — auto-detected and wired through the shipped Prism adapter (structured output constrained to the declared routes). Particle Academy’s maintained fork of prism-php/prism, carrying the same Prism\\Prism\\ namespace — do not install both."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FancyFlow": "FancyFlow\\Laravel\\Facades\\FancyFlow"
+                    },
+                    "providers": [
+                        "FancyFlow\\Laravel\\FancyFlowServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FancyFlow\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Particle Academy",
+                    "homepage": "https://github.com/Particle-Academy"
+                }
+            ],
+            "description": "PHP runtime for fancy-flow workflow graphs — the framework-free twin of @particle-academy/fancy-flow's engine. Same WorkflowSchema JSON in, same outputs out; author in <FlowEditor>, run on PHP.",
+            "homepage": "https://github.com/Particle-Academy/fancy-flow-php",
+            "keywords": [
+                "DAG",
+                "agentic",
+                "ai",
+                "automation",
+                "fancy-flow",
+                "flow",
+                "orchestration",
+                "particle-academy",
+                "workflow"
+            ],
+            "support": {
+                "issues": "https://github.com/Particle-Academy/fancy-flow-php/issues",
+                "source": "https://github.com/Particle-Academy/fancy-flow-php"
+            },
+            "time": "2026-08-11T20:33:41+00:00"
+        },
+        {
+            "name": "particle-academy/laravel-catalog",
+            "version": "v0.11.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Particle-Academy/laravel-catalog.git",
+                "reference": "9822b96c30dc823d58e890fdda913d21aceebf0a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Particle-Academy/laravel-catalog/zipball/9822b96c30dc823d58e890fdda913d21aceebf0a",
+                "reference": "9822b96c30dc823d58e890fdda913d21aceebf0a",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/cashier": "^15.0|^16.0",
+                "laravel/framework": "^13.0",
+                "particle-academy/laravel-fms": ">=0.2 <2.0",
+                "php": "^8.4",
+                "stripe/stripe-php": "^13.0|^16.0|^17.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0|^4.0",
+                "pestphp/pest-plugin-laravel": "^3.0|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LaravelCatalog\\CatalogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaravelCatalog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Laravel package for managing Stripe catalog (Products, Prices) via a facade API",
+            "support": {
+                "issues": "https://github.com/Particle-Academy/laravel-catalog/issues",
+                "source": "https://github.com/Particle-Academy/laravel-catalog/tree/v0.11.0"
+            },
+            "time": "2026-08-08T03:29:49+00:00"
+        },
+        {
+            "name": "particle-academy/laravel-fms",
+            "version": "v0.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Particle-Academy/laravel-feature-management-system.git",
+                "reference": "2e88edad6c764503ad15cb270482ed38afe98091"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Particle-Academy/laravel-feature-management-system/zipball/2e88edad6c764503ad15cb270482ed38afe98091",
+                "reference": "2e88edad6c764503ad15cb270482ed38afe98091",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^13.0",
+                "nesbot/carbon": "^2.0|^3.0",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0|^4.0",
+                "pestphp/pest-plugin-laravel": "^3.0|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FMS": "ParticleAcademy\\Fms\\Facades\\FMS"
+                    },
+                    "providers": [
+                        "ParticleAcademy\\Fms\\FmsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ParticleAcademy\\Fms\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Laravel Feature Management System (FMS) for product feature entitlements and usage tracking",
+            "keywords": [
+                "entitlements",
+                "feature-flags",
+                "feature-management",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/Particle-Academy/laravel-feature-management-system/issues",
+                "source": "https://github.com/Particle-Academy/laravel-feature-management-system/tree/v0.9.0"
+            },
+            "time": "2026-08-07T15:05:39+00:00"
+        },
+        {
+            "name": "particle-academy/laravel-fun-lab",
+            "version": "v0.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Particle-Academy/laravel-fun-lab.git",
+                "reference": "10585562f8679095f18bde749e40bac6c62af087"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Particle-Academy/laravel-fun-lab/zipball/10585562f8679095f18bde749e40bac6c62af087",
+                "reference": "10585562f8679095f18bde749e40bac6c62af087",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^13.0",
+                "illuminate/database": "^13.0",
+                "illuminate/events": "^13.0",
+                "illuminate/http": "^13.0",
+                "illuminate/routing": "^13.0",
+                "illuminate/support": "^13.0",
+                "illuminate/validation": "^13.0",
+                "php": "^8.4",
+                "symfony/yaml": "^6.0|^7.0|^8.0"
+            },
+            "replace": {
+                "particleacademy/laravel-fun-lab": "self.version"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.26",
+                "orchestra/testbench": "^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "LFL": "LaravelFunLab\\Facades\\LFL"
+                    },
+                    "providers": [
+                        "LaravelFunLab\\LFLServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaravelFunLab\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Particle Academy",
+                    "email": "dev@particleacademy.com"
+                }
+            ],
+            "description": "Analytics-driven gamification layer for Laravel applications. Track user engagement through awards, achievements, and prizes.",
+            "keywords": [
+                "Gamification",
+                "achievements",
+                "analytics",
+                "awards",
+                "engagement",
+                "laravel",
+                "leaderboards",
+                "prizes"
+            ],
+            "support": {
+                "issues": "https://github.com/Particle-Academy/laravel-fun-lab/issues",
+                "source": "https://github.com/Particle-Academy/laravel-fun-lab/tree/v0.6.0"
+            },
+            "time": "2026-08-07T15:05:39+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -4306,6 +4743,65 @@
             "time": "2026-08-06T16:21:11+00:00"
         },
         {
+            "name": "stripe/stripe-php",
+            "version": "v17.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stripe/stripe-php.git",
+                "reference": "a6219df5df1324a0d3f1da25fb5e4b8a3307ea16"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/a6219df5df1324a0d3f1da25fb5e4b8a3307ea16",
+                "reference": "a6219df5df1324a0d3f1da25fb5e4b8a3307ea16",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "3.72.0",
+                "phpstan/phpstan": "^1.2",
+                "phpunit/phpunit": "^5.7 || ^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stripe\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stripe and contributors",
+                    "homepage": "https://github.com/stripe/stripe-php/contributors"
+                }
+            ],
+            "description": "Stripe PHP Library",
+            "homepage": "https://stripe.com/",
+            "keywords": [
+                "api",
+                "payment processing",
+                "stripe"
+            ],
+            "support": {
+                "issues": "https://github.com/stripe/stripe-php/issues",
+                "source": "https://github.com/stripe/stripe-php/tree/v17.6.0"
+            },
+            "time": "2025-08-27T19:32:42+00:00"
+        },
+        {
             "name": "symfony/clock",
             "version": "v8.1.0",
             "source": {
@@ -5458,6 +5954,94 @@
                 }
             ],
             "time": "2026-07-28T08:25:59+00:00"
+        },
+        {
+            "name": "symfony/polyfill-intl-icu",
+            "version": "v1.38.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-intl-icu.git",
+                "reference": "445c90e341fccda10311019cf82ff73bb7343945"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-icu/zipball/445c90e341fccda10311019cf82ff73bb7343945",
+                "reference": "445c90e341fccda10311019cf82ff73bb7343945",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "suggest": {
+                "ext-intl": "For best performance and support of other locales than \"en\""
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Intl\\Icu\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ],
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for intl's ICU-related data and classes",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "icu",
+                "intl",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-icu/tree/v1.38.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-05-25T11:52:53+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
@@ -7112,6 +7696,82 @@
             ],
             "support": {
                 "source": "https://github.com/symfony/var-dumper/tree/v8.1.2"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-07-22T15:42:13+00:00"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v8.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "faabdbe998e8c5c599dceffa27aa265b185c0736"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/faabdbe998e8c5c599dceffa27aa265b185c0736",
+                "reference": "faabdbe998e8c5c599dceffa27aa265b185c0736",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/polyfill-ctype": "^1.8"
+            },
+            "conflict": {
+                "symfony/console": "<7.4"
+            },
+            "require-dev": {
+                "symfony/console": "^7.4|^8.0",
+                "yaml/yaml-test-suite": "*"
+            },
+            "bin": [
+                "Resources/bin/yaml-lint"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Yaml\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Loads and dumps YAML files",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/yaml/tree/v8.1.2"
             },
             "funding": [
                 {
@@ -11065,82 +11725,6 @@
                 }
             ],
             "time": "2024-10-20T05:08:20+00:00"
-        },
-        {
-            "name": "symfony/yaml",
-            "version": "v8.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/yaml.git",
-                "reference": "faabdbe998e8c5c599dceffa27aa265b185c0736"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/faabdbe998e8c5c599dceffa27aa265b185c0736",
-                "reference": "faabdbe998e8c5c599dceffa27aa265b185c0736",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.4.1",
-                "symfony/polyfill-ctype": "^1.8"
-            },
-            "conflict": {
-                "symfony/console": "<7.4"
-            },
-            "require-dev": {
-                "symfony/console": "^7.4|^8.0",
-                "yaml/yaml-test-suite": "*"
-            },
-            "bin": [
-                "Resources/bin/yaml-lint"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Yaml\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Loads and dumps YAML files",
-            "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/yaml/tree/v8.1.2"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-07-22T15:42:13+00:00"
         },
         {
             "name": "ta-tikoma/phpunit-architecture-test",
