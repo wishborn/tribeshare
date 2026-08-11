@@ -19,6 +19,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
         "particle-academy/fancy-flow-php": "^0.14.3",
+        "particle-academy/holy-sheet": "^2.0",
         "particle-academy/laravel-catalog": "^0.11.0",
         "particle-academy/laravel-fms": "^0.9.0",
         "particle-academy/laravel-fun-lab": "^0.6.0"

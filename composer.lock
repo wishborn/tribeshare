@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89010b11aaf92ebd3937b5defb22a2b8",
+    "content-hash": "16c90f2be43d92bcc9a1c79999eb4cfa",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3339,6 +3339,76 @@
                 "source": "https://github.com/Particle-Academy/fancy-flow-php"
             },
             "time": "2026-08-11T20:33:41+00:00"
+        },
+        {
+            "name": "particle-academy/holy-sheet",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Particle-Academy/holy-sheet.git",
+                "reference": "e094b956ec8c21c8dccb48cf460f2f0aa35473a8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Particle-Academy/holy-sheet/zipball/e094b956ec8c21c8dccb48cf460f2f0aa35473a8",
+                "reference": "e094b956ec8c21c8dccb48cf460f2f0aa35473a8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-zip": "*",
+                "php": "^8.4"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+                "pestphp/pest": "^3.0|^4.0",
+                "phpunit/phpunit": "^10.0|^11.0|^12.0"
+            },
+            "suggest": {
+                "illuminate/support": "Only needed when using the optional Laravel service provider, facade, or artisan command. Compatible with 10.x through 13.x. The core HolySheet\\Agent + writer require zero framework."
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "HolySheet": "HolySheet\\Laravel\\Facades\\HolySheet"
+                    },
+                    "providers": [
+                        "HolySheet\\Laravel\\HolySheetServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "HolySheet\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Particle Academy",
+                    "homepage": "https://github.com/Particle-Academy"
+                }
+            ],
+            "description": "Standalone spreadsheet writing tool for agentic document creation. Framework-agnostic core with optional Laravel 10-13 integration.",
+            "homepage": "https://github.com/Particle-Academy/holy-sheet",
+            "keywords": [
+                "agentic",
+                "ai",
+                "csv",
+                "document-creation",
+                "excel",
+                "particle-academy",
+                "spreadsheet",
+                "xlsx"
+            ],
+            "support": {
+                "issues": "https://github.com/Particle-Academy/holy-sheet/issues",
+                "source": "https://github.com/Particle-Academy/holy-sheet"
+            },
+            "time": "2026-08-09T10:53:52+00:00"
         },
         {
             "name": "particle-academy/laravel-catalog",
