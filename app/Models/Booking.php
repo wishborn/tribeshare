@@ -19,6 +19,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property BookingStatus $status
  * @property CarbonImmutable $starts_at
  * @property CarbonImmutable $ends_at
+ * @property CarbonImmutable $occupies_from
+ * @property CarbonImmutable $occupies_until
+ * @property int $bookend_before_mesos
+ * @property int $bookend_after_mesos
+ * @property string|null $collection_item_id
  * @property int $duration_mesos
  * @property int $priority
  * @property int $per_person_cents
@@ -40,6 +45,8 @@ class Booking extends Model
             'status' => BookingStatus::class,
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'occupies_from' => 'datetime',
+            'occupies_until' => 'datetime',
             'bumped_at' => 'datetime',
             'bullied' => 'boolean',
             'price_multiplier_pct' => 'float',
@@ -119,15 +126,24 @@ class Booking extends Model
     }
 
     /**
-     * Bookings overlapping the given half-open range, so a booking ending
-     * exactly as another begins does not conflict.
+     * Bookings whose OCCUPIED range overlaps the given one — buffers
+     * included, so turnaround is respected rather than merely displayed.
+     *
+     * Half-open, so an occupancy ending exactly as another begins does not
+     * conflict.
      *
      * @param  Builder<Booking>  $query
      */
-    public function scopeOverlapping(Builder $query, \DateTimeInterface $startsAt, \DateTimeInterface $endsAt): void
+    public function scopeOverlapping(Builder $query, \DateTimeInterface $from, \DateTimeInterface $until): void
     {
-        $query->where('starts_at', '<', $endsAt)
-            ->where('ends_at', '>', $startsAt);
+        $query->where('occupies_from', '<', $until)
+            ->where('occupies_until', '>', $from);
+    }
+
+    /** @return BelongsTo<CollectionItem, $this> */
+    public function collectionItem(): BelongsTo
+    {
+        return $this->belongsTo(CollectionItem::class);
     }
 
     /**

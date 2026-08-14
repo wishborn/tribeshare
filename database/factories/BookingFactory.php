@@ -33,6 +33,10 @@ class BookingFactory extends Factory
             },
             'starts_at' => $startsAt,
             'ends_at' => $startsAt->copy()->addHours(2),
+            // No buffers by default, so the occupied range matches the
+            // booked one unless a state widens it.
+            'occupies_from' => $startsAt,
+            'occupies_until' => $startsAt->copy()->addHours(2),
             'duration_mesos' => 20,
             'status' => BookingStatus::Confirmed,
             'priority' => 1,
@@ -44,6 +48,8 @@ class BookingFactory extends Factory
         return $this->state(fn () => [
             'starts_at' => $startsAt,
             'ends_at' => $endsAt,
+            'occupies_from' => $startsAt,
+            'occupies_until' => $endsAt,
             'duration_mesos' => (int) round($startsAt->diffInMinutes($endsAt) / 6),
         ]);
     }

@@ -45,6 +45,26 @@ class Asset extends Model
         return $this->hasMany(Booking::class);
     }
 
+    /** @return HasMany<CollectionItem, $this> */
+    public function collectionItems(): HasMany
+    {
+        return $this->hasMany(CollectionItem::class)->orderBy('position');
+    }
+
+    /**
+     * Turnaround reserved before and after every booking of this asset, in
+     * mesos. A house wants hours; a bike wants minutes.
+     *
+     * @return array{before: int, after: int}
+     */
+    public function bookendMesos(): array
+    {
+        return [
+            'before' => max(0, (int) $this->setting('bookend_before_mesos', 0)),
+            'after' => max(0, (int) $this->setting('bookend_after_mesos', 0)),
+        ];
+    }
+
     /** @return BelongsToMany<User, $this> */
     public function poolMembers(): BelongsToMany
     {

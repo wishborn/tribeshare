@@ -9,6 +9,7 @@ use App\Enums\LedgerLabel;
 use App\Exceptions\BookingNotPermitted;
 use App\Models\Asset;
 use App\Models\Booking;
+use App\Models\CollectionItem;
 use App\Models\User;
 use App\Services\Ledger\LedgerService;
 use App\Services\Pricing\BookingPricing;
@@ -42,6 +43,7 @@ class BookingService
         ?string $slotType = null,
         bool $requiresApproval = false,
         bool $allowBump = false,
+        ?CollectionItem $item = null,
     ): Booking {
         if ($endsAt->lessThanOrEqualTo($startsAt)) {
             throw BookingNotPermitted::invalidRange();
@@ -49,7 +51,7 @@ class BookingService
 
         return DB::transaction(function () use (
             $user, $asset, $startsAt, $endsAt, $basePriceCents,
-            $multiplierPct, $slotType, $requiresApproval, $allowBump
+            $multiplierPct, $slotType, $requiresApproval, $allowBump, $item
         ): Booking {
             // Serialise every write against this asset. Held for the whole
             // transaction, so the overlap check below cannot race.
@@ -69,16 +71,32 @@ class BookingService
             }
 
             $priority = $user->bookingPriorityFor($asset);
-            $conflicts = $this->conflictsFor($asset, $startsAt, $endsAt);
 
-            $bumped = $this->resolveConflicts($conflicts, $user, $priority, $allowBump);
+            // The asset's turnaround buffers widen what this booking ties
+            // up. Conflicts are judged on the occupied range, not the
+            // booked one.
+            $bookends = $asset->bookendMesos();
+            $mesoMinutes = (int) config('tribeshare.bookings.meso_minutes');
+            $occupiesFrom = $startsAt->copy()->subMinutes($bookends['before'] * $mesoMinutes);
+            $occupiesUntil = $endsAt->copy()->addMinutes($bookends['after'] * $mesoMinutes);
+
+            $conflicts = $this->conflictsFor($asset, $occupiesFrom, $occupiesUntil, $item);
+
+            $bumped = $this->resolveConflicts(
+                $conflicts, $user, $priority, $allowBump, $this->capacityOf($item)
+            );
 
             $booking = Booking::create([
                 'asset_id' => $asset->id,
                 'user_id' => $user->id,
                 'llc_id' => $asset->llc_id,
+                'collection_item_id' => $item?->id,
                 'starts_at' => $startsAt,
                 'ends_at' => $endsAt,
+                'occupies_from' => $occupiesFrom,
+                'occupies_until' => $occupiesUntil,
+                'bookend_before_mesos' => $bookends['before'],
+                'bookend_after_mesos' => $bookends['after'],
                 'duration_mesos' => $this->mesosBetween($startsAt, $endsAt),
                 'status' => $this->initialStatus($user, $asset, $requiresApproval),
                 'priority' => $priority,
@@ -156,19 +174,41 @@ class BookingService
     }
 
     /**
-     * Live bookings overlapping the range. Half-open, so a booking ending
-     * exactly as another begins is not a conflict.
+     * Live bookings whose occupied range overlaps the one given.
+     *
+     * Scoped to the same collection item where there is one — two units of a
+     * collection do not contend with each other.
      *
      * @return Collection<int, Booking>
      */
-    public function conflictsFor(Asset $asset, CarbonInterface $startsAt, CarbonInterface $endsAt): Collection
-    {
+    public function conflictsFor(
+        Asset $asset,
+        CarbonInterface $from,
+        CarbonInterface $until,
+        ?CollectionItem $item = null,
+    ): Collection {
         return Booking::query()
             ->where('asset_id', $asset->getKey())
+            ->when(
+                $item !== null,
+                fn ($q) => $q->where('collection_item_id', $item?->getKey()),
+                fn ($q) => $q->whereNull('collection_item_id'),
+            )
             ->live()
-            ->overlapping($startsAt, $endsAt)
+            ->overlapping($from, $until)
             ->lockForUpdate()
             ->get();
+    }
+
+    /**
+     * How many bookings may hold the same slice at once.
+     *
+     * The asset itself is a single thing. A collection item stands for a
+     * number of identical units, so it admits that many.
+     */
+    private function capacityOf(?CollectionItem $item): int
+    {
+        return $item === null ? 1 : max(1, $item->quantity);
     }
 
     /**
@@ -222,11 +262,20 @@ class BookingService
      * invariant holds again at commit.
      *
      * @param  Collection<int, Booking>  $conflicts
+     * @param  int  $capacity  how many may hold this slice at once
      * @return bool whether anything was displaced
      */
-    private function resolveConflicts(Collection $conflicts, User $user, int $priority, bool $allowBump): bool
-    {
-        if ($conflicts->isEmpty()) {
+    private function resolveConflicts(
+        Collection $conflicts,
+        User $user,
+        int $priority,
+        bool $allowBump,
+        int $capacity = 1,
+    ): bool {
+        // Overlapping is only a problem once the units run out. An item with
+        // three of something admits three concurrent bookings; the fourth is
+        // what contends.
+        if ($conflicts->count() < $capacity) {
             return false;
         }
 
@@ -234,13 +283,21 @@ class BookingService
             throw BookingNotPermitted::slotTaken();
         }
 
-        foreach ($conflicts as $conflict) {
+        // Free only as many units as it takes to fit — displacing three
+        // members to take one slot of a three-unit item would be absurd.
+        $toFree = $conflicts->count() - $capacity + 1;
+
+        $displaceable = $conflicts
+            ->sortBy('priority')
+            ->take($toFree);
+
+        foreach ($displaceable as $conflict) {
             if ($conflict->priority >= $priority) {
                 throw BookingNotPermitted::mayNotBump();
             }
         }
 
-        foreach ($conflicts as $conflict) {
+        foreach ($displaceable as $conflict) {
             $conflict->update([
                 'status' => BookingStatus::Bumped,
                 'bumped_by_user_id' => $user->id,

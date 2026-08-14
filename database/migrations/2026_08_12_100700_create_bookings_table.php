@@ -22,9 +22,10 @@ return new class extends Migration
             $table->foreignUuid('booking_group_id')->nullable()
                 ->constrained()->nullOnDelete();
 
-            // Multi-item assets. No FK yet — collection items are modelled
-            // in the assets pass.
-            $table->uuid('collection_item_id')->nullable();
+            // Which unit of a collection this booking takes. Null means the
+            // asset itself, whose capacity is one.
+            $table->foreignUuid('collection_item_id')->nullable()
+                ->constrained()->restrictOnDelete();
 
             // --- Time -------------------------------------------------------
             // Absolute instants rather than (date, start meso, end meso), so
@@ -36,6 +37,20 @@ return new class extends Migration
             // Redundant with the pair above, but pricing and allocation are
             // expressed in mesos and recomputing this everywhere is noise.
             $table->unsignedSmallInteger('duration_mesos');
+
+            // --- Occupied range ---------------------------------------------
+            // What the booking actually ties up, including the asset's
+            // turnaround buffers. A house reserving four hours after checkout
+            // occupies far more than its own range, and conflict detection
+            // compares THESE bounds, not starts_at/ends_at.
+            //
+            // Stored rather than derived so the range stays indexable and so
+            // the booking keeps the buffers it was made under — settings
+            // change, and a later edit must not retroactively free a slot.
+            $table->dateTime('occupies_from');
+            $table->dateTime('occupies_until');
+            $table->unsignedSmallInteger('bookend_before_mesos')->default(0);
+            $table->unsignedSmallInteger('bookend_after_mesos')->default(0);
 
             // --- Status -----------------------------------------------------
             // pending | confirmed | active | completed | denied | cancelled | bumped
@@ -78,8 +93,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            // Overlap detection scans this.
-            $table->index(['asset_id', 'starts_at', 'ends_at']);
+            // Overlap detection scans this — the OCCUPIED range, buffers
+            // included, narrowed by collection item where there is one.
+            $table->index(['asset_id', 'collection_item_id', 'occupies_from', 'occupies_until'], 'bookings_occupancy_idx');
             // The scheduled sweep scans this.
             $table->index(['status', 'starts_at']);
             $table->index(['user_id', 'status']);
