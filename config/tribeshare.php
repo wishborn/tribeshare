@@ -14,14 +14,18 @@ return [
     | Credit only becomes payable once the income that created it has matured
     | for `payout_maturity_days`.
     |
+    | The default carried-balance limit is deliberately NOT here. It is a
+    | per-member column whose default has to apply without any application
+    | code running, so it lives in the users migration and in the User model's
+    | attribute defaults. Putting it here would imply a runtime authority that
+    | neither of those consults.
+    |
     */
 
     'billing' => [
         'due_days' => 14,
         'grace_days' => 7,
         'payout_maturity_days' => 7,
-        // $1,000.00
-        'default_carried_balance_limit_cents' => 1000_00,
     ],
 
     /*

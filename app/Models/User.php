@@ -56,19 +56,25 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
-     * A database default is applied by the database — it is NOT reflected on
-     * the model instance that inserted the row, so reading the attribute
-     * straight after create() would yield null and every limit check would
-     * compare against nothing. Setting it here means the value is present in
-     * memory as well as on disk, with config remaining the one authority.
+     * Defaults for values the application reads back.
+     *
+     * A database default is applied by the DATABASE, so it is absent from the
+     * model instance that inserted the row — reading it straight after
+     * create() yields null and every limit check compares against nothing.
+     *
+     * These live here rather than in a `creating` hook because seeders
+     * routinely mute model events (`WithoutModelEvents`), which would skip a
+     * hook silently and leave the column null again. Attribute defaults apply
+     * on instantiation and cannot be muted.
+     *
+     * Keep in step with the column defaults in the users migration.
+     *
+     * @var array<string, mixed>
      */
-    protected static function booted(): void
-    {
-        static::creating(function (User $user): void {
-            $user->carried_balance_limit_cents ??= max(0, (int) config('tribeshare.billing.default_carried_balance_limit_cents'));
-            $user->billing_suspended ??= false;
-        });
-    }
+    protected $attributes = [
+        'carried_balance_limit_cents' => 1000_00,
+        'billing_suspended' => false,
+    ];
 
     /** @return HasMany<Hat, $this> */
     public function hats(): HasMany
