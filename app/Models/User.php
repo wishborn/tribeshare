@@ -52,6 +52,7 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'billing_suspended' => 'boolean',
+            'is_super_admin' => 'boolean',
         ];
     }
 
@@ -74,6 +75,7 @@ class User extends Authenticatable implements PasskeyUser
     protected $attributes = [
         'carried_balance_limit_cents' => 1000_00,
         'billing_suspended' => false,
+        'is_super_admin' => false,
     ];
 
     /** @return HasMany<Hat, $this> */
@@ -98,6 +100,12 @@ class User extends Authenticatable implements PasskeyUser
     public function payoutRequests(): HasMany
     {
         return $this->hasMany(PayoutRequest::class);
+    }
+
+    /** @return HasMany<Suspension, $this> */
+    public function suspensions(): HasMany
+    {
+        return $this->hasMany(Suspension::class);
     }
 
     /** @return MorphMany<LedgerEntry, $this> */
