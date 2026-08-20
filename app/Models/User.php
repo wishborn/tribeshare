@@ -141,9 +141,32 @@ class User extends Authenticatable implements PasskeyUser
         return $query->exists();
     }
 
+    /**
+     * The content authority — regions, LLCs, assets, members, and access to
+     * regional hats.
+     */
     public function isRcm(): bool
     {
         return $this->hasHat(HatType::Rcm);
+    }
+
+    /**
+     * The platform operator. A separate domain from the RCM, not a superset:
+     * an Admin outranks an RCM for granting purposes but holds no authority
+     * over an asset's bookings or an LLC's members.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasHat(HatType::Admin);
+    }
+
+    /**
+     * The first Admin ever created. Cannot be demoted or removed, and is the
+     * only member who may appoint or remove other Admins.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->is_super_admin && $this->isAdmin();
     }
 
     /**

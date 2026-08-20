@@ -84,15 +84,24 @@ it('requires an exactly-scoped hat for the two sensitive LLC powers', function (
         ->and($this->powers->onLlc($this->user, $llc, LlcPower::AssignHats))->toBeFalse();
 });
 
-it('lets the platform operators short-circuit every power check', function () {
+it('lets the content authority short-circuit every power check', function () {
     $asset = Asset::factory()->create();
     $rcm = User::factory()->create();
-    $admin = User::factory()->create();
     $this->hats->grant($rcm, HatType::Rcm);
-    $this->hats->grant($admin, HatType::Admin);
 
     expect($this->powers->onAsset($rcm, $asset, AssetPower::EditSettings))->toBeTrue()
-        ->and($this->powers->onAsset($admin, $asset, AssetPower::EditSettings))->toBeTrue();
+        ->and($this->powers->onLlc($rcm, $asset->llc, LlcPower::ManageMembers))->toBeTrue();
+});
+
+it('does not give the platform operator any content power', function () {
+    $asset = Asset::factory()->create();
+    $admin = User::factory()->create();
+    $this->hats->grant($admin, HatType::Admin);
+
+    // The two tiers are separate domains, not nested ones. An Admin outranks
+    // an RCM for appointing purposes and holds nothing over an LLC's assets.
+    expect($this->powers->onAsset($admin, $asset, AssetPower::EditSettings))->toBeFalse()
+        ->and($this->powers->onLlc($admin, $asset->llc, LlcPower::ManageMembers))->toBeFalse();
 });
 
 // --- Suspension ---------------------------------------------------------

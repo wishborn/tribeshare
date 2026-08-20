@@ -30,7 +30,7 @@ class PowerService
 
     public function onAsset(User $user, Asset $asset, AssetPower $power): bool
     {
-        if ($this->isPlatformOperator($user)) {
+        if ($this->isContentSuperuser($user)) {
             return true;
         }
 
@@ -54,7 +54,7 @@ class PowerService
 
     public function onLlc(User $user, Llc $llc, LlcPower $power): bool
     {
-        if ($this->isPlatformOperator($user)) {
+        if ($this->isContentSuperuser($user)) {
             return true;
         }
 
@@ -101,12 +101,18 @@ class PowerService
     }
 
     /**
-     * An RCM administers the content; an Admin administers the platform.
-     * Both short-circuit every delegated-power check.
+     * The RCM is the content authority and short-circuits every delegated
+     * power check.
+     *
+     * An **Admin does not** — deliberately. The two tiers are separate
+     * domains, not nested ones: an Admin manages the platform, an RCM
+     * manages content and access to regional hats. An Admin outranks an RCM
+     * for *granting* purposes (rank 11 over 10, so they may appoint one) but
+     * holds no authority over an asset's bookings or an LLC's members.
      */
-    private function isPlatformOperator(User $user): bool
+    private function isContentSuperuser(User $user): bool
     {
-        return $user->isRcm() || $this->hats->holds($user, HatType::Admin);
+        return $user->isRcm();
     }
 
     private function granted(Asset|Llc $entity, PowerTier $tier, string $power, bool $default): bool
