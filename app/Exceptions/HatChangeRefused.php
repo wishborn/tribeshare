@@ -7,7 +7,7 @@ use RuntimeException;
 /**
  * A hat could not be granted or revoked.
  *
- * The two revocation refusals are domain invariants, not policy checks —
+ * The three revocation refusals are domain invariants, not policy checks —
  * they hold against every actor including an RCM, and governance does not
  * override them either.
  */
@@ -24,6 +24,13 @@ class HatChangeRefused extends RuntimeException
     {
         return new self(
             "This is the only active {$type}. Appoint another before removing this one."
+        );
+    }
+
+    public static function superAdmin(): self
+    {
+        return new self(
+            'The Super Admin cannot be stripped of the Admin hat. Hand the role on first.'
         );
     }
 

@@ -150,3 +150,17 @@ it('reports standing over an entity as the highest applicable rank', function ()
 
     expect($this->hats->rankFor($this->user, $asset))->toBe(HatType::AssetManager->rank());
 });
+
+it('refuses to strip the super admin of the admin hat', function () {
+    $super = User::factory()->create();
+    $hat = $this->hats->grant($super, HatType::Admin);
+
+    $second = User::factory()->create();
+    $this->hats->grant($second, HatType::Admin);
+
+    // Absolute, like the other two: HatPolicy refuses it as well, but policy
+    // decides authority and the service decides possibility. The platform
+    // must never be left without the account that can appoint Admins.
+    expect(fn () => $this->hats->revoke($hat->refresh()))
+        ->toThrow(HatChangeRefused::class, 'Super Admin');
+});

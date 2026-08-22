@@ -51,7 +51,7 @@ class HatService
     /**
      * Revoke a hat, or refuse.
      *
-     * Two refusals are absolute. They are not policy — no actor overrides
+     * Three refusals are absolute. They are not policy — no actor overrides
      * them, and governance executing a proposal comes through here too.
      */
     public function revoke(Hat $hat): void
@@ -59,6 +59,7 @@ class HatService
         DB::transaction(function () use ($hat): void {
             $this->assertNotLastMembership($hat);
             $this->assertNotSoleOwner($hat);
+            $this->assertNotSuperAdmin($hat);
 
             $hat->delete();
         });
@@ -178,6 +179,20 @@ class HatService
 
         if (! $remaining) {
             throw HatChangeRefused::lastMembership($hat->type->value);
+        }
+    }
+
+    /**
+     * The Super Admin is undeletable, on the sole-owner precedent.
+     *
+     * HatPolicy refuses this too, but policy decides authority and this
+     * decides possibility — the platform must never be left without the one
+     * account that can appoint Admins.
+     */
+    private function assertNotSuperAdmin(Hat $hat): void
+    {
+        if ($hat->type === HatType::Admin && $hat->user->isSuperAdmin()) {
+            throw HatChangeRefused::superAdmin();
         }
     }
 
