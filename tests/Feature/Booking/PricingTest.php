@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GroupPriceMode;
 use App\Models\Asset;
 use App\Models\Llc;
 use App\Models\Region;
@@ -25,11 +26,21 @@ it('adds both fees on top of the base price', function () {
         ->and($pricing->totalCents)->toBe(115_00);
 });
 
-it('applies the per-meso multiplier as a percentage uplift', function () {
-    $pricing = $this->pricing->price(assetWithFees(0, 0), basePriceCents: 100_00, multiplierPct: 50);
+it('treats a multiplier of 100 as leaving the price alone', function () {
+    $pricing = $this->pricing->price(assetWithFees(0, 0), basePriceCents: 100_00, multiplierPct: 100);
 
-    expect($pricing->adjustedCents)->toBe(150_00)
-        ->and($pricing->totalCents)->toBe(150_00);
+    expect($pricing->adjustedCents)->toBe(100_00);
+});
+
+it('applies the per-meso multiplier as a percentage of the base price', function () {
+    // 150 adds half again; 50 halves it. NOT an uplift — the prototype read
+    // it as base * (1 + m/100) while defaulting the authoring value to 100,
+    // so every deliberately-saved slot priced at double.
+    $dearer = $this->pricing->price(assetWithFees(0, 0), basePriceCents: 100_00, multiplierPct: 150);
+    $cheaper = $this->pricing->price(assetWithFees(0, 0), basePriceCents: 100_00, multiplierPct: 50);
+
+    expect($dearer->adjustedCents)->toBe(150_00)
+        ->and($cheaper->adjustedCents)->toBe(50_00);
 });
 
 it('charges the flat minimum when it beats the percentage', function () {
@@ -76,7 +87,7 @@ it('scales a group by the configured multiplier', function () {
     $region = Region::factory()->create();
     $llc = Llc::factory()->for($region)->create();
     $asset = Asset::factory()->for($llc)
-        ->withSettings(['group_price_mode' => 'multiplier', 'group_multiplier' => 0.5])
+        ->groupPricing(GroupPriceMode::Multiplier, multiplier: 0.5)
         ->create()->load('llc.region');
 
     // Half price each, four of them.
@@ -90,7 +101,7 @@ it('charges a premium for each additional person', function () {
     $region = Region::factory()->create();
     $llc = Llc::factory()->for($region)->create();
     $asset = Asset::factory()->for($llc)
-        ->withSettings(['group_price_mode' => 'premium', 'group_premium_cents' => 10_00])
+        ->groupPricing(GroupPriceMode::Premium, premiumCents: 10_00)
         ->create()->load('llc.region');
 
     // 100.00 base plus 10.00 for each of the three extra people.

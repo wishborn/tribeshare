@@ -23,10 +23,13 @@ class PricingService
      * @param  int  $basePriceCents  from the slot type, or the service type for person-assets
      * @param  float  $multiplierPct  mean per-meso uplift across the booked range
      */
+    /**
+     * @param  float  $multiplierPct  100 means normal price (see below)
+     */
     public function price(
         Asset $asset,
         int $basePriceCents,
-        float $multiplierPct = 0.0,
+        float $multiplierPct = 100.0,
         int $groupSize = 1,
     ): BookingPricing {
         if ($groupSize < 1) {
@@ -36,7 +39,14 @@ class PricingService
         $llc = $asset->llc;
         $region = $llc->region;
 
-        $adjusted = (int) round($basePriceCents * (1 + $multiplierPct / 100));
+        // 100 leaves the price alone; 150 adds half again; 50 halves it.
+        //
+        // NOT an uplift. The prototype computed `base * (1 + m/100)` while
+        // its own authoring panel defaulted the multiplier to 100, so every
+        // slot saved at the default silently priced at double — and an
+        // unruled meso, contributing 0, came out cheaper than a deliberate
+        // one.
+        $adjusted = (int) round($basePriceCents * $multiplierPct / 100);
 
         $groupTotal = $this->groupTotal($asset, $adjusted, $groupSize);
 
@@ -90,8 +100,8 @@ class PricingService
      */
     public function contributionSplit(Asset $asset, int $perPersonCents): array
     {
-        $llcPct = (float) $asset->setting('voluntary_contrib_llc_pct', 0);
-        $regionPct = (float) $asset->setting('voluntary_contrib_region_pct', 0);
+        $llcPct = $asset->voluntary_contrib_llc_pct;
+        $regionPct = $asset->voluntary_contrib_region_pct;
 
         $this->assertContributionsValid($llcPct, $regionPct);
 
@@ -134,16 +144,11 @@ class PricingService
             return $adjustedCents;
         }
 
-        $mode = GroupPriceMode::tryFrom((string) $asset->setting('group_price_mode', 'none'))
-            ?? GroupPriceMode::None;
-
-        return match ($mode) {
+        return match ($asset->group_price_mode) {
             GroupPriceMode::Multiplier => (int) round(
-                $adjustedCents * (float) $asset->setting('group_multiplier', 1) * $groupSize
+                $adjustedCents * $asset->group_multiplier * $groupSize
             ),
-            GroupPriceMode::Premium => $adjustedCents + (int) round(
-                (int) $asset->setting('group_premium_cents', 0) * ($groupSize - 1)
-            ),
+            GroupPriceMode::Premium => $adjustedCents + $asset->group_premium_cents * ($groupSize - 1),
             GroupPriceMode::None => $adjustedCents * $groupSize,
         };
     }

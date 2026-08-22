@@ -54,7 +54,7 @@ it('records the occupied range as the booked range when there are no buffers', f
 it('widens the occupied range by the asset buffers', function () {
     // 10 mesos before (1hr), 40 after (4hr) — a house's turnaround.
     $asset = Asset::factory()
-        ->withSettings(['bookend_before_mesos' => 10, 'bookend_after_mesos' => 40])
+        ->withBookends(10, 40)
         ->create();
 
     $booking = book($asset, poolMember($asset), '2026-09-01 10:00', '2026-09-01 12:00');
@@ -66,7 +66,7 @@ it('widens the occupied range by the asset buffers', function () {
 });
 
 it('refuses a back-to-back booking that would leave no turnaround', function () {
-    $asset = Asset::factory()->withSettings(['bookend_after_mesos' => 40])->create();
+    $asset = Asset::factory()->withBookends(0, 40)->create();
     book($asset, poolMember($asset), '2026-09-01 10:00', '2026-09-01 12:00');
 
     // Starts when the previous booking ends, but inside its four-hour tail.
@@ -75,7 +75,7 @@ it('refuses a back-to-back booking that would leave no turnaround', function () 
 });
 
 it('allows a booking that begins once the turnaround has elapsed', function () {
-    $asset = Asset::factory()->withSettings(['bookend_after_mesos' => 40])->create();
+    $asset = Asset::factory()->withBookends(0, 40)->create();
     book($asset, poolMember($asset), '2026-09-01 10:00', '2026-09-01 12:00');
 
     $second = book($asset, poolMember($asset), '2026-09-01 16:00', '2026-09-01 18:00');
@@ -84,7 +84,7 @@ it('allows a booking that begins once the turnaround has elapsed', function () {
 });
 
 it('applies the leading buffer as well, blocking a booking that ends too close', function () {
-    $asset = Asset::factory()->withSettings(['bookend_before_mesos' => 10])->create();
+    $asset = Asset::factory()->withBookends(10, 0)->create();
     book($asset, poolMember($asset), '2026-09-01 12:00', '2026-09-01 14:00');
 
     // Ends at 11:30, inside the hour of preparation before 12:00.
@@ -93,10 +93,10 @@ it('applies the leading buffer as well, blocking a booking that ends too close',
 });
 
 it('keeps the buffers it was made under when settings later change', function () {
-    $asset = Asset::factory()->withSettings(['bookend_after_mesos' => 40])->create();
+    $asset = Asset::factory()->withBookends(0, 40)->create();
     $booking = book($asset, poolMember($asset), '2026-09-01 10:00', '2026-09-01 12:00');
 
-    $asset->update(['settings' => ['bookend_after_mesos' => 0]]);
+    $asset->update(['bookend_after_mesos' => 0]);
 
     expect($booking->refresh()->occupies_until->toDateTimeString())->toBe('2026-09-01 16:00:00');
 });

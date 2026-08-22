@@ -39,7 +39,10 @@ class BookingService
         CarbonInterface $startsAt,
         CarbonInterface $endsAt,
         int $basePriceCents,
-        float $multiplierPct = 0.0,
+        // 100 means normal price, so this default leaves the base alone.
+        // It was 0.0 while the multiplier was read as an uplift, which under
+        // the corrected semantics would make every booking free.
+        float $multiplierPct = 100.0,
         ?string $slotType = null,
         bool $requiresApproval = false,
         bool $allowBump = false,
