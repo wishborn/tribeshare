@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\HatType;
 use App\Enums\LlcPower;
+use App\Models\GovernanceLock;
 use App\Models\Llc;
 use App\Models\User;
 use App\Services\Permissions\HatService;
@@ -88,6 +89,20 @@ class LlcPolicy
      */
     public function setFee(User $user, Llc $llc): bool
     {
+        if (GovernanceLock::locks($llc, 'booking_fee_pct')) {
+            // A vote settled the fee and froze it. Only another proposal, or
+            // a repeal of the one that locked it, moves it now.
+            return false;
+        }
+
         return $user->isRcm() || $this->hats->holds($user, HatType::LlcOwner, $llc);
+    }
+
+    /**
+     * Editing one particular field, refused while a decision holds it frozen.
+     */
+    public function updateField(User $user, Llc $llc, string $field): bool
+    {
+        return ! GovernanceLock::locks($llc, $field) && $this->update($user, $llc);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Enums\AssetPower;
 use App\Enums\HatType;
 use App\Models\Asset;
+use App\Models\GovernanceLock;
 use App\Models\User;
 use App\Services\Permissions\HatService;
 use App\Services\Permissions\PowerService;
@@ -45,6 +46,19 @@ class AssetPolicy
     public function update(User $user, Asset $asset): bool
     {
         return $this->powers->onAsset($user, $asset, AssetPower::EditSettings);
+    }
+
+    /**
+     * Editing one particular setting.
+     *
+     * A field a decision froze is closed to the ordinary edit path however
+     * senior the editor — the point of a lock is that an owner cannot
+     * quietly reverse what the members settled. Changing it means another
+     * proposal, or repealing the one that locked it.
+     */
+    public function updateField(User $user, Asset $asset, string $field): bool
+    {
+        return ! GovernanceLock::locks($asset, $field) && $this->update($user, $asset);
     }
 
     /**

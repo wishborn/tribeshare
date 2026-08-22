@@ -8,7 +8,11 @@ use App\Enums\LedgerDirection;
 use App\Enums\LedgerLabel;
 use App\Enums\PaymentStatus;
 use App\Enums\PayoutStatus;
+use App\Enums\ProposalStatus;
+use App\Enums\ProposalType;
 use App\Enums\UnitReportStatus;
+use App\Enums\VoteDirection;
+use App\Enums\VotingModel;
 use App\Models\Asset;
 use App\Models\Booking;
 use App\Models\Hat;
@@ -16,9 +20,12 @@ use App\Models\LedgerEntry;
 use App\Models\Llc;
 use App\Models\Payment;
 use App\Models\PayoutRequest;
+use App\Models\Proposal;
 use App\Models\Region;
 use App\Models\User;
 use App\Services\Booking\BookingService;
+use App\Services\Governance\GovernanceService;
+use App\Services\Governance\ProposalExecutor;
 use App\Services\Ledger\LedgerService;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Seeder;
@@ -321,7 +328,90 @@ class TribeShareDemoSeeder extends Seeder
 
         $ledger->reverse($misposted, 'Charged to the wrong member', $rcm);
 
-        $this->command->info('Seeded 1 region, 2 LLCs, 3 assets, 6 members and 7 bookings.');
+        // --- Governance, at every stage ----------------------------------
+        $this->seedGovernance($northwoods, $cabin, $ada, $ben, $cleo);
+
+        $this->command->info('Seeded 1 region, 2 LLCs, 3 assets, 6 members, 7 bookings and 4 proposals.');
+    }
+
+    /**
+     * Governance in every state worth looking at: one gathering signatures,
+     * one open with votes already cast, one that carried and is serving out
+     * its cooling-off, and one that carried but was refused at execution.
+     *
+     * That last state only exists because guards always win, so the demo
+     * shows it rather than leaving it to a test.
+     */
+    private function seedGovernance(Llc $llc, Asset $asset, User $ada, User $ben, User $cleo): void
+    {
+        $governance = app(GovernanceService::class);
+
+        $config = $governance->configFor($llc);
+        $config->update([
+            'enabled' => true,
+            'model' => VotingModel::OneMemberOneVote,
+            'quorum_pct' => 50,
+            'pass_pct' => 60,
+            'who_can_propose' => 'members',
+        ]);
+
+        // Gathering signatures - one of three members so far.
+        $petition = $governance->propose(
+            $cleo, $llc, ProposalType::ChangeAssetSetting,
+            'Shorten the cancellation window on the cabin',
+            ['field' => 'no_cancel_minutes', 'value' => 720],
+            ProposalStatus::Petition,
+        );
+        $petition->signatures()->create(['user_id' => $cleo->id]);
+
+        // Open, with two of three heard from - enough for quorum, and short
+        // of the turnout that would settle it early.
+        $open = $governance->propose(
+            $ada, $llc, ProposalType::ChangeFee,
+            'Lower the booking fee to 8%',
+            ['fee_pct' => 8],
+            ProposalStatus::Voting,
+        );
+        $governance->castVote($open, $ada, VoteDirection::Yes);
+        $governance->castVote($open->refresh(), $ben, VoteDirection::Abstain);
+
+        // Carried, waiting out its cooling-off, and locking the field it
+        // settles so an owner cannot quietly reverse it.
+        Proposal::create([
+            'governance_config_id' => $config->id,
+            'governable_type' => $asset->getMorphClass(),
+            'governable_id' => $asset->id,
+            'type' => ProposalType::ChangeAssetSetting,
+            'title' => 'Raise the cabin group limit to eight',
+            'proposed_by' => $ben->id,
+            'status' => ProposalStatus::Passed,
+            'execution_delay_days' => 2,
+            'action_payload' => ['field' => 'max_group_size', 'value' => 8],
+            'locks_field' => 'max_group_size',
+            'voting_opens_at' => now()->subDays(8),
+            'voting_closes_at' => now()->subDay(),
+            'executes_at' => now()->addDay(),
+        ]);
+
+        // Passed its vote and refused at execution: Cleo belongs to this LLC
+        // and nowhere else, so removing her would leave her with no
+        // membership. Nobody may do that, a vote included.
+        $refused = Proposal::create([
+            'governance_config_id' => $config->id,
+            'governable_type' => $llc->getMorphClass(),
+            'governable_id' => $llc->id,
+            'type' => ProposalType::RemoveMember,
+            'title' => 'Remove Cleo Marchetti from the collective',
+            'proposed_by' => $ben->id,
+            'status' => ProposalStatus::Passed,
+            'execution_delay_days' => 2,
+            'action_payload' => ['user_id' => $cleo->id],
+            'voting_opens_at' => now()->subDays(10),
+            'voting_closes_at' => now()->subDays(3),
+            'executes_at' => now()->subDay(),
+        ]);
+
+        app(ProposalExecutor::class)->execute($refused);
     }
 
     private function member(string $name, string $email): User
