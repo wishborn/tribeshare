@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\BookingStatus;
+use App\Enums\ClaimStatus;
 use App\Enums\HatType;
 use App\Enums\LedgerDirection;
 use App\Enums\LedgerLabel;
@@ -10,6 +11,8 @@ use App\Enums\PaymentStatus;
 use App\Enums\PayoutStatus;
 use App\Enums\ProposalStatus;
 use App\Enums\ProposalType;
+use App\Enums\RegionDocumentCategory;
+use App\Enums\RequestType;
 use App\Enums\UnitReportStatus;
 use App\Enums\VoteDirection;
 use App\Enums\VotingModel;
@@ -22,11 +25,16 @@ use App\Models\Payment;
 use App\Models\PayoutRequest;
 use App\Models\Proposal;
 use App\Models\Region;
+use App\Models\RegionDocument;
 use App\Models\User;
 use App\Services\Booking\BookingService;
 use App\Services\Governance\GovernanceService;
 use App\Services\Governance\ProposalExecutor;
 use App\Services\Ledger\LedgerService;
+use App\Services\Messaging\MessagingService;
+use App\Services\Organisation\ClaimService;
+use App\Services\Organisation\OffboardingService;
+use App\Services\Requests\RequestService;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Seeder;
 
@@ -331,7 +339,16 @@ class TribeShareDemoSeeder extends Seeder
         // --- Governance, at every stage ----------------------------------
         $this->seedGovernance($northwoods, $cabin, $ada, $ben, $cleo);
 
-        $this->command->info('Seeded 1 region, 2 LLCs, 3 assets, 6 members, 7 bookings and 4 proposals.');
+        // --- Conversations, requests, claims and a departure --------------
+        $this->seedCommunications($northwoods, $cabin, $ada, $ben, $cleo, $rcm);
+        $this->seedRequests($northwoods, $lakeside, $cabin, $ada, $dev, $faye);
+        $this->seedRegionLibrary($region, $cabin, $rcm);
+        $this->seedOffboarding($lakeside, $dev);
+
+        $this->command->info(
+            'Seeded 1 region, 2 LLCs, 3 assets, 6 members, 7 bookings, 4 proposals, '
+            .'3 conversations, 3 requests, 2 claims and a queued departure.'
+        );
     }
 
     /**
@@ -412,6 +429,107 @@ class TribeShareDemoSeeder extends Seeder
         ]);
 
         app(ProposalExecutor::class)->execute($refused);
+    }
+
+    /**
+     * Threads worth opening: a direct exchange, a group with an attachment
+     * left unread, and one the recipient has archived.
+     */
+    private function seedCommunications(Llc $llc, Asset $asset, User $ada, User $ben, User $cleo, User $rcm): void
+    {
+        $messaging = app(MessagingService::class);
+
+        $direct = $messaging->openDirect($ada, $ben);
+        $messaging->send($direct, $ada, 'Are you taking the truck up on Saturday?');
+        $messaging->send($direct->refresh(), $ben, 'Planning to. I can bring the trailer.');
+
+        // Unread for Cleo, so the messages badge has something to show.
+        $group = $messaging->openGroup($ada, [$ben, $cleo], 'Cabin weekend', $asset);
+        $messaging->send($group, $ada, 'Bringing the good coffee. Anyone need a lift?');
+
+        // Archived by one member only — it stays in everyone else's list.
+        $withRcm = $messaging->openDirect($cleo, $rcm);
+        $messaging->send($withRcm, $cleo, 'Could you look at the mooring charge on my account?');
+        $messaging->archive($withRcm->refresh(), $rcm);
+    }
+
+    /**
+     * The approval queue, with one of each outcome still visible.
+     */
+    private function seedRequests(Llc $northwoods, Llc $lakeside, Asset $cabin, User $ada, User $dev, User $faye): void
+    {
+        $requests = app(RequestService::class);
+
+        // Waiting on a decision: Dev wants into Northwoods.
+        $requests->raise($dev, RequestType::JoinLlc, $northwoods, 'I am up that way most weekends.');
+
+        // Waiting on a decision: Faye wants access to the cabin pool.
+        $requests->raise($faye, RequestType::JoinPool, $cabin, 'Happy to help with upkeep.');
+
+        // Resolved, so the history is not uniformly pending.
+        $settled = $requests->raise($faye, RequestType::JoinLlc, $lakeside, 'Closer to home.');
+        $requests->approve($settled, $ada, 'Welcome aboard.');
+    }
+
+    /**
+     * A region's paperwork, and two claims at different stages.
+     */
+    private function seedRegionLibrary(Region $region, Asset $asset, User $rcm): void
+    {
+        $claims = app(ClaimService::class);
+
+        $policy = RegionDocument::create([
+            'region_id' => $region->id,
+            'category' => RegionDocumentCategory::Insurance,
+            'title' => 'Master liability policy 2026',
+            'path' => 'documents/policy-2026.pdf',
+            'original_name' => 'policy-2026.pdf',
+            'mime_type' => 'application/pdf',
+            'uploaded_by' => $rcm->id,
+        ]);
+
+        RegionDocument::create([
+            'region_id' => $region->id,
+            'category' => RegionDocumentCategory::Contracts,
+            'title' => 'Boat slip lease',
+            'path' => 'documents/slip-lease.pdf',
+            'original_name' => 'slip-lease.pdf',
+            'mime_type' => 'application/pdf',
+            'uploaded_by' => $rcm->id,
+        ]);
+
+        // Open, and part-way through.
+        $open = $claims->file(
+            $region, $rcm,
+            'Storm damage to the cabin roof',
+            now()->subWeeks(3),
+            claimedCents: 4_500_00,
+            subject: $asset,
+        );
+        $claims->advance($open, ClaimStatus::UnderReview, $rcm, 'Adjuster booked.');
+        $claims->attachDocument($open->refresh(), $policy->id);
+
+        // Settled for less than was claimed, which is the usual outcome.
+        $paid = $claims->file(
+            $region, $rcm,
+            'Trailer hitch replacement',
+            now()->subMonths(4),
+            claimedCents: 800_00,
+        );
+        $claims->advance($paid, ClaimStatus::UnderReview, $rcm);
+        $claims->advance($paid->refresh(), ClaimStatus::Approved, $rcm);
+        $claims->advance($paid->refresh(), ClaimStatus::Paid, $rcm, 'Settled.', settledCents: 640_00);
+    }
+
+    /**
+     * A departure waiting on its obligations.
+     *
+     * Dev has an unpaid balance, so the queue is visible and stationary —
+     * which is the interesting state, not the one that fires immediately.
+     */
+    private function seedOffboarding(Llc $llc, User $dev): void
+    {
+        app(OffboardingService::class)->queueLeave($dev, $llc);
     }
 
     private function member(string $name, string $email): User

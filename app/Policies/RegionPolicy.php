@@ -73,4 +73,43 @@ class RegionPolicy
     {
         return $user->isRcm() || $this->hats->holds($user, HatType::RegionOwner, $region);
     }
+
+    /**
+     * Claims are insurance business, and follow the documents they arise
+     * from.
+     */
+    public function manageClaims(User $user, Region $region): bool
+    {
+        return $this->manageDocuments($user, $region);
+    }
+
+    public function restore(User $user, Region $region): bool
+    {
+        unset($region);
+
+        return $user->isRcm();
+    }
+
+    /**
+     * Deleting over the structural objections.
+     *
+     * Still the content authority's, and still unable to discard money — the
+     * service refuses that for everyone, so this only decides who may reach
+     * for it at all.
+     */
+    public function forceDelete(User $user, Region $region): bool
+    {
+        unset($region);
+
+        return $user->isRcm();
+    }
+
+    /**
+     * Who members here may message. A region-level policy decision, so it
+     * belongs to whoever runs the region.
+     */
+    public function setMessagingScope(User $user, Region $region): bool
+    {
+        return $user->isRcm() || $this->hats->holds($user, HatType::RegionOwner, $region);
+    }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Contracts\Retirable;
+use App\Enums\MessagingScope;
+use App\Models\Concerns\Retires;
 use Database\Factories\RegionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,10 +13,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Region extends Model
+/**
+ * @property MessagingScope|null $messaging_scope
+ * @property bool $visible
+ */
+class Region extends Model implements Retirable
 {
     /** @use HasFactory<RegionFactory> */
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, Retires, SoftDeletes;
 
     protected $guarded = [];
 
@@ -22,8 +29,8 @@ class Region extends Model
         return [
             'visible' => 'boolean',
             'booking_fee_pct' => 'float',
-            'suspended_at' => 'datetime',
-            'queued_for_retirement_at' => 'datetime',
+            'messaging_scope' => MessagingScope::class,
+            ...$this->retirementCasts(),
         ];
     }
 
@@ -39,8 +46,27 @@ class Region extends Model
         return $this->morphMany(LedgerEntry::class, 'owner');
     }
 
-    public function isQueuedForRetirement(): bool
+    /** @return HasMany<RegionDocument, $this> */
+    public function documents(): HasMany
     {
-        return $this->queued_for_retirement_at !== null;
+        return $this->hasMany(RegionDocument::class);
+    }
+
+    /** @return HasMany<RegionClaim, $this> */
+    public function claims(): HasMany
+    {
+        return $this->hasMany(RegionClaim::class);
+    }
+
+    /**
+     * Who members here may message, falling back to the platform default.
+     *
+     * Null means "not chosen", never "no restriction" — a region that has
+     * never set one still gets the configured policy.
+     */
+    public function messagingScope(): MessagingScope
+    {
+        return $this->messaging_scope
+            ?? MessagingScope::from((string) config('tribeshare.messaging.default_scope'));
     }
 }

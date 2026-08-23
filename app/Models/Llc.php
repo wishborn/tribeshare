@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Contracts\Retirable;
+use App\Models\Concerns\Retires;
 use Database\Factories\LlcFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,10 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Llc extends Model
+class Llc extends Model implements Retirable
 {
     /** @use HasFactory<LlcFactory> */
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, Retires, SoftDeletes;
 
     protected $table = 'llcs';
 
@@ -25,8 +27,7 @@ class Llc extends Model
         return [
             'settings' => 'array',
             'booking_fee_pct' => 'float',
-            'suspended_at' => 'datetime',
-            'queued_for_retirement_at' => 'datetime',
+            ...$this->retirementCasts(),
         ];
     }
 
@@ -48,8 +49,9 @@ class Llc extends Model
         return $this->morphMany(LedgerEntry::class, 'owner');
     }
 
-    public function isQueuedForRetirement(): bool
+    /** @return HasMany<LlcLeaveQueue, $this> */
+    public function leaveQueues(): HasMany
     {
-        return $this->queued_for_retirement_at !== null;
+        return $this->hasMany(LlcLeaveQueue::class);
     }
 }

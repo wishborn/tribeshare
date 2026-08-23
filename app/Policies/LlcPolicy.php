@@ -105,4 +105,51 @@ class LlcPolicy
     {
         return ! GovernanceLock::locks($llc, $field) && $this->update($user, $llc);
     }
+
+    /**
+     * Retiring queues the LLC and everything under it. An owner may wind up
+     * their own LLC; an RCM may wind up any.
+     */
+    public function retire(User $user, Llc $llc): bool
+    {
+        return $user->isRcm() || $this->hats->holds($user, HatType::LlcOwner, $llc);
+    }
+
+    public function restore(User $user, Llc $llc): bool
+    {
+        return $this->retire($user, $llc);
+    }
+
+    /**
+     * Suspending and lifting a suspension are separate abilities because they
+     * are separate actions — the prototype's single toggle meant a caller had
+     * to know the current state to predict what it would do.
+     */
+    public function suspend(User $user, Llc $llc): bool
+    {
+        unset($llc);
+
+        return $user->isRcm();
+    }
+
+    public function unsuspend(User $user, Llc $llc): bool
+    {
+        return $this->suspend($user, $llc);
+    }
+
+    public function forceDelete(User $user, Llc $llc): bool
+    {
+        unset($llc);
+
+        return $user->isRcm();
+    }
+
+    /**
+     * A member asking to leave. Their own decision, not a permission anyone
+     * grants them — but they must actually be a member.
+     */
+    public function leave(User $user, Llc $llc): bool
+    {
+        return $this->hats->holds($user, HatType::LlcMember, $llc);
+    }
 }

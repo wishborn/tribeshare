@@ -13,3 +13,8 @@ Artisan::command('inspire', function () {
 // transitions are stamped with a time, and the sweep is idempotent, so the
 // cadence only decides how promptly they are noticed.
 Schedule::command('tribeshare:governance-sweep')->hourly()->withoutOverlapping();
+
+// The three grace-period queues. Nothing here is urgent — every transition is
+// stamped with a time and the sweep is idempotent — but a member who has
+// settled up should not wait long to actually leave.
+Schedule::command('tribeshare:offboarding-sweep')->hourly()->withoutOverlapping();

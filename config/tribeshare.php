@@ -72,4 +72,92 @@ return [
         'live_statuses' => ['pending', 'confirmed', 'active'],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Messaging
+    |--------------------------------------------------------------------------
+    |
+    | Who a member may start a conversation with is set PER REGION; this is
+    | the default a region inherits until it chooses otherwise. The prototype
+    | held it platform-wide and never enforced it anywhere but the page.
+    |
+    | Attachments are real files with a size ceiling and an allow-list. The
+    | prototype recorded them without ever defining what they were.
+    |
+    */
+
+    'messaging' => [
+        'default_scope' => 'llc_only',
+        'preview_length' => 80,
+
+        'attachments' => [
+            'disk' => 'local',
+            'max_bytes' => 10 * 1024 * 1024,
+            'max_per_message' => 10,
+            'allowed_mime_types' => [
+                'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic',
+                'application/pdf',
+                'text/plain', 'text/csv',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notifications
+    |--------------------------------------------------------------------------
+    |
+    | Badge pages, and the two that behave unusually: bookings never fades,
+    | and some pages are excluded from seen-tracking entirely.
+    |
+    | Web push needs a VAPID key pair. Generate one with
+    | `php artisan tribeshare:push-keys` and put it in the environment; push
+    | is simply skipped while the keys are absent, so nothing breaks locally.
+    |
+    */
+
+    'notifications' => [
+        'badge_pages' => [
+            'bookings', 'messages', 'requests', 'governance', 'notifications', 'billing',
+        ],
+        'never_fades' => ['bookings'],
+        'excluded_from_seen' => ['billing'],
+
+        'push' => [
+            'enabled' => env('PUSH_ENABLED', true),
+            'subject' => env('PUSH_SUBJECT', 'mailto:support@tribeshare.test'),
+            'public_key' => env('VAPID_PUBLIC_KEY'),
+            'private_key' => env('VAPID_PRIVATE_KEY'),
+            'ttl' => 2_592_000,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Offboarding
+    |--------------------------------------------------------------------------
+    |
+    | Nothing is removed immediately. Retiring a region, queueing a member for
+    | recycle and quitting an LLC all queue and fire automatically once the
+    | member's or entity's obligations settle.
+    |
+    | An obligation is an open booking OR an unsettled ledger — money owed,
+    | credit stranded, or a payout still pending. The prototype counted only
+    | bookings, so a member could leave owing money or forfeit a balance.
+    |
+    */
+
+    'offboarding' => [
+        'obligations' => [
+            'open_bookings' => true,
+            'outstanding_charges' => true,
+            'unsettled_credit' => true,
+            'pending_payouts' => true,
+        ],
+    ],
+
 ];

@@ -49,6 +49,26 @@ class HatService
     }
 
     /**
+     * Activate a hat that was created pending.
+     *
+     * A request creates the hat it anticipates immediately but inert, so
+     * approval is a state change rather than a creation. Activating has to
+     * run the same side effects a direct grant would — pool access, first
+     * ownership — or an approved owner ends up outside the pool of the asset
+     * they own.
+     */
+    public function activate(Hat $hat): Hat
+    {
+        return DB::transaction(function () use ($hat): Hat {
+            $hat->update(['active' => true]);
+
+            $this->applyGrantSideEffects($hat->user, $hat->type, $hat->scopeable);
+
+            return $hat->refresh();
+        });
+    }
+
+    /**
      * Revoke a hat, or refuse.
      *
      * Three refusals are absolute. They are not policy — no actor overrides

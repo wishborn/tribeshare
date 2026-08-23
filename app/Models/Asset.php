@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Contracts\Retirable;
 use App\Enums\GroupPriceMode;
+use App\Models\Concerns\Retires;
 use Database\Factories\AssetFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -28,10 +30,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Collection<int, AssetSlotType> $slotTypes
  * @property Collection<int, AssetUnitPrice> $unitPrices
  */
-class Asset extends Model
+class Asset extends Model implements Retirable
 {
     /** @use HasFactory<AssetFactory> */
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, Retires, SoftDeletes;
 
     protected $guarded = [];
 
@@ -82,8 +84,7 @@ class Asset extends Model
             // the booking path is now a column.
             'settings' => 'array',
             'draft_settings' => 'array',
-            'suspended_at' => 'datetime',
-            'queued_for_retirement_at' => 'datetime',
+            ...$this->retirementCasts(),
             'approved_at' => 'datetime',
             'verified_at' => 'datetime',
             'group_price_mode' => GroupPriceMode::class,
