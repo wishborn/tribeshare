@@ -1,0 +1,362 @@
+{
+  "source": "https://ui.particle.academy/mcp",
+  "queried": "2026-09-22",
+  "components": [
+    {
+      "name": "accordion",
+      "title": "Accordion"
+    },
+    {
+      "name": "accordion-panel",
+      "title": "AccordionPanel"
+    },
+    {
+      "name": "audio-viewer",
+      "title": "AudioViewer"
+    },
+    {
+      "name": "autocomplete",
+      "title": "Autocomplete"
+    },
+    {
+      "name": "avatar",
+      "title": "Avatar"
+    },
+    {
+      "name": "badge",
+      "title": "Badge"
+    },
+    {
+      "name": "brand",
+      "title": "Brand"
+    },
+    {
+      "name": "breadcrumbs",
+      "title": "Breadcrumbs"
+    },
+    {
+      "name": "button",
+      "title": "Button"
+    },
+    {
+      "name": "calendar",
+      "title": "Calendar"
+    },
+    {
+      "name": "callout",
+      "title": "Callout"
+    },
+    {
+      "name": "card",
+      "title": "Card"
+    },
+    {
+      "name": "carousel",
+      "title": "Carousel"
+    },
+    {
+      "name": "catalog-fms",
+      "title": "Catalog + FMS"
+    },
+    {
+      "name": "chart",
+      "title": "Chart"
+    },
+    {
+      "name": "chat-drawer",
+      "title": "ChatDrawer"
+    },
+    {
+      "name": "checkbox",
+      "title": "Checkbox"
+    },
+    {
+      "name": "checkbox-group",
+      "title": "CheckboxGroup"
+    },
+    {
+      "name": "code-view",
+      "title": "CodeView"
+    },
+    {
+      "name": "color-picker",
+      "title": "ColorPicker"
+    },
+    {
+      "name": "command",
+      "title": "Command"
+    },
+    {
+      "name": "composer",
+      "title": "Composer"
+    },
+    {
+      "name": "container",
+      "title": "Container"
+    },
+    {
+      "name": "content-renderer",
+      "title": "ContentRenderer"
+    },
+    {
+      "name": "context-menu",
+      "title": "ContextMenu"
+    },
+    {
+      "name": "date-picker",
+      "title": "DatePicker"
+    },
+    {
+      "name": "drawer",
+      "title": "Drawer"
+    },
+    {
+      "name": "dropdown",
+      "title": "Dropdown"
+    },
+    {
+      "name": "editor",
+      "title": "Editor"
+    },
+    {
+      "name": "emoji",
+      "title": "Emoji"
+    },
+    {
+      "name": "emoji-select",
+      "title": "EmojiSelect"
+    },
+    {
+      "name": "eyebrow",
+      "title": "Eyebrow"
+    },
+    {
+      "name": "faux-client",
+      "title": "FauxClient"
+    },
+    {
+      "name": "field",
+      "title": "Field"
+    },
+    {
+      "name": "file-browser",
+      "title": "FileBrowser"
+    },
+    {
+      "name": "file-upload",
+      "title": "FileUpload"
+    },
+    {
+      "name": "grid",
+      "title": "Grid"
+    },
+    {
+      "name": "heading",
+      "title": "Heading"
+    },
+    {
+      "name": "icon",
+      "title": "Icon"
+    },
+    {
+      "name": "image-viewer",
+      "title": "ImageViewer"
+    },
+    {
+      "name": "index-list",
+      "title": "IndexList"
+    },
+    {
+      "name": "input",
+      "title": "Input"
+    },
+    {
+      "name": "input-tag",
+      "title": "InputTag"
+    },
+    {
+      "name": "json-editor",
+      "title": "JsonEditor"
+    },
+    {
+      "name": "kanban",
+      "title": "Kanban"
+    },
+    {
+      "name": "kbd",
+      "title": "Kbd"
+    },
+    {
+      "name": "magic-wand",
+      "title": "MagicWand"
+    },
+    {
+      "name": "marquee",
+      "title": "Marquee"
+    },
+    {
+      "name": "media-viewer",
+      "title": "MediaViewer"
+    },
+    {
+      "name": "menu",
+      "title": "Menu"
+    },
+    {
+      "name": "mobile-menu",
+      "title": "MobileMenu"
+    },
+    {
+      "name": "modal",
+      "title": "Modal"
+    },
+    {
+      "name": "mood-meter",
+      "title": "MoodMeter"
+    },
+    {
+      "name": "multi-switch",
+      "title": "MultiSwitch"
+    },
+    {
+      "name": "navbar",
+      "title": "Navbar"
+    },
+    {
+      "name": "otp-input",
+      "title": "OtpInput"
+    },
+    {
+      "name": "pagination",
+      "title": "Pagination"
+    },
+    {
+      "name": "pdf-viewer",
+      "title": "PdfViewer"
+    },
+    {
+      "name": "pillbox",
+      "title": "Pillbox"
+    },
+    {
+      "name": "popover",
+      "title": "Popover"
+    },
+    {
+      "name": "portal",
+      "title": "Portal"
+    },
+    {
+      "name": "profile",
+      "title": "Profile"
+    },
+    {
+      "name": "progress",
+      "title": "Progress"
+    },
+    {
+      "name": "prompt-input",
+      "title": "PromptInput"
+    },
+    {
+      "name": "pull-quote",
+      "title": "PullQuote"
+    },
+    {
+      "name": "radio-group",
+      "title": "RadioGroup"
+    },
+    {
+      "name": "react-fancy",
+      "title": "react-fancy"
+    },
+    {
+      "name": "react-fancy-sticky-note",
+      "title": "StickyNote"
+    },
+    {
+      "name": "reason-tag",
+      "title": "ReasonTag"
+    },
+    {
+      "name": "section",
+      "title": "Section"
+    },
+    {
+      "name": "select",
+      "title": "Select"
+    },
+    {
+      "name": "separator",
+      "title": "Separator"
+    },
+    {
+      "name": "sidebar",
+      "title": "Sidebar"
+    },
+    {
+      "name": "skeleton",
+      "title": "Skeleton"
+    },
+    {
+      "name": "slider",
+      "title": "Slider"
+    },
+    {
+      "name": "stat",
+      "title": "Stat"
+    },
+    {
+      "name": "stat-list",
+      "title": "StatList"
+    },
+    {
+      "name": "switch",
+      "title": "Switch"
+    },
+    {
+      "name": "table",
+      "title": "Table"
+    },
+    {
+      "name": "tabs",
+      "title": "Tabs"
+    },
+    {
+      "name": "text",
+      "title": "Text"
+    },
+    {
+      "name": "textarea",
+      "title": "Textarea"
+    },
+    {
+      "name": "time-grid",
+      "title": "TimeGrid"
+    },
+    {
+      "name": "time-picker",
+      "title": "TimePicker"
+    },
+    {
+      "name": "timeline",
+      "title": "Timeline"
+    },
+    {
+      "name": "toast",
+      "title": "Toast"
+    },
+    {
+      "name": "tooltip",
+      "title": "Tooltip"
+    },
+    {
+      "name": "tree-nav",
+      "title": "TreeNav"
+    },
+    {
+      "name": "video-viewer",
+      "title": "VideoViewer"
+    }
+  ]
+}

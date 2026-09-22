@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+@import '../../node_modules/@particle-academy/react-fancy/dist/styles.css';
+@source '../../node_modules/@particle-academy/react-fancy/dist/*.js';
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Diagnostic palettes, deliberately NOT the prototype's production design. */
+@theme {
+    --color-primary: #a64224;
+    --color-background: #fff4df;
+    --color-foreground: #302415;
+}
+[data-theme='dark'] {
+    --color-primary: #509af0;
+    --color-background: #111827;
+    --color-foreground: #edf2ff;
+}
+[data-theme='color'] {
+    --color-primary: #9010df;
+    --color-background: #efe0ff;
+    --color-foreground: #36104f;
+}
+/* Opt-in probe: remapping palette tokens demonstrates what Fancy actually uses. */
+[data-palette='mapped'][data-theme='light'] {
+    --color-violet-500: #a64224;
+    --color-zinc-100: #fff4df;
+    --color-white: #fff4df;
+}
+[data-palette='mapped'][data-theme='dark'] {
+    --color-violet-500: #509af0;
+    --color-zinc-800: #111827;
+    --color-zinc-900: #111827;
+}
+[data-palette='mapped'][data-theme='color'] {
+    --color-violet-500: #9010df;
+    --color-zinc-100: #efe0ff;
+    --color-white: #efe0ff;
+}
+body {
+    margin: 16px;
+    font-family: system-ui;
+}
+main {
+    display: grid;
+    gap: 16px;
+}
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+.coverage {
+    display: flex;
+    gap: 8px;
+}
+.coverage > div {
+    padding: 8px;
+    border: 1px solid currentColor;
+}

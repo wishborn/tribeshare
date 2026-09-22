@@ -104,6 +104,7 @@ export default [
     },
     {
         ignores: [
+            'spikes/pass-0/dist/**',
             'vendor',
             'node_modules',
             'public',
